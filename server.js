@@ -26,7 +26,7 @@ app.get('/', (req, res) => {
 
 // Adding routes
 app.use("/api/user", userRouter);
-app.use("api/owner", ownerRouter);
+app.use("/api/owner", ownerRouter);
 
 
 const PORT = process.env.PORT || 3000;
