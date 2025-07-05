@@ -1,9 +1,9 @@
 import imagekit from "../configs/imageKit.js";
 import User from "../models/User.js";
 import fs from "fs";
-import Car from "../models/Car.js"
+import Car from "../models/Car.js";
 
-// Change role API
+// Change Role API
 export const changeRoleToOwner = async (req, res) => {
   try {
     const { _id } = req.user;
@@ -18,7 +18,7 @@ export const changeRoleToOwner = async (req, res) => {
   }
 };
 
-// Add new car API
+// Add New Car API
 export const addCar = async (req, res) => {
   try {
     const { _id } = req.user;
@@ -44,8 +44,84 @@ export const addCar = async (req, res) => {
     });
 
     const image = optimizedImageURL;
-    await Car.create({...car, owner: _id, image })
-     res.json({ success: true, message: "Car Added" });
+    await Car.create({ ...car, owner: _id, image });
+    res.json({ success: true, message: "Car Added" });
+  } catch (error) {
+    console.log(error.message);
+    res.json({ success: false, message: error.message });
+  }
+};
+
+// List Owner Cars - API
+export const getOwnerCars = async (req, res) => {
+  try {
+    const { _id } = req.user;
+    const cars = await Car.find({ owner: _id });
+    res.json({ success: true, cars });
+  } catch (error) {
+    console.log(error.message);
+    res.json({ success: false, message: error.message });
+  }
+};
+
+// Car Availability -API
+
+export const toggleCarAvailability = async (req, res) => {
+  try {
+    const { _id } = req.user;
+    const { carId } = req.user;
+    const car = await Car.find(carId);
+
+    // Is car belongs to the owner
+    if (car.owner.toString() !== _id.toString()) {
+      return res.json({ success: false, message: "Unauthorized" });
+    }
+
+    car.isAvailable = !car.isAvailable;
+    await car.save();
+
+    res.json({ success: true, message: "Availability toggled" });
+  } catch (error) {
+    console.log(error.message);
+    res.json({ success: false, message: error.message });
+  }
+};
+
+// Delete Car -API
+
+export const deleteCar = async (req, res) => {
+  try {
+    const { _id } = req.user;
+    const { carId } = req.user;
+    const car = await Car.find(carId);
+
+    // Is car belongs to the owner
+    if (car.owner.toString() !== _id.toString()) {
+      return res.json({ success: false, message: "Unauthorized" });
+    }
+
+    car.owner = null;
+    car.isAvailable = false;
+    await car.save();
+
+    res.json({ success: true, message: "Car Removed or Unavailable" });
+  } catch (error) {
+    console.log(error.message);
+    res.json({ success: false, message: error.message });
+  }
+};
+
+// Dashboard - API
+export const getDashboardData = async (req, res) => {
+  try {
+    const {_id, role} = req.user;
+
+    if(role !== "owner"){
+        return res.json({ success: false, message: "Unauthorized" });
+    }
+
+    const cars = await Car.find({owner : _id});
+
 
   } catch (error) {
     console.log(error.message);
