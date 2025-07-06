@@ -4,6 +4,7 @@ import cors from 'cors';
 import connectDB from './configs/db.js';
 import userRouter from './routes/userRoutes.js';
 import ownerRouter from './routes/ownerRoutes.js';
+import bookingRouter from './routes/bookingRoutes.js';
 
 dotenv.config();
 
@@ -27,6 +28,7 @@ app.get('/', (req, res) => {
 // Adding routes
 app.use("/api/user", userRouter);
 app.use("/api/owner", ownerRouter);
+app.use("/api/bookings", bookingRouter);
 
 
 const PORT = process.env.PORT || 3000;
