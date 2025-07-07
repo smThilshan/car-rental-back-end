@@ -69,16 +69,21 @@ export const getOwnerCars = async (req, res) => {
 
 export const toggleCarAvailability = async (req, res) => {
   try {
-    const { _id } = req.user;
-    const { carId } = req.user;
-    const car = await Car.find(carId);
+    const { _id } = req.user;              // User ID from token
+    const { carId } = req.body;            // Car ID from request body
 
-    // Is car belongs to the owner
+    const car = await Car.findById(carId); // Get car by ID
+
+    if (!car) {
+      return res.json({ success: false, message: "Car not found" });
+    }
+
+    // Ensure the car belongs to the owner
     if (car.owner.toString() !== _id.toString()) {
       return res.json({ success: false, message: "Unauthorized" });
     }
 
-    car.isAvailable = !car.isAvailable;
+    car.isAvailable = !car.isAvailable;   // Toggle availability
     await car.save();
 
     res.json({ success: true, message: "Availability toggled" });
@@ -88,13 +93,14 @@ export const toggleCarAvailability = async (req, res) => {
   }
 };
 
+
 // Delete Car -API
 
 export const deleteCar = async (req, res) => {
   try {
     const { _id } = req.user;
-    const { carId } = req.user;
-    const car = await Car.find(carId);
+    const { carId } = req.body;
+     const car = await Car.findById(carId); // Get car by ID
 
     // Is car belongs to the owner
     if (car.owner.toString() !== _id.toString()) {
@@ -138,6 +144,8 @@ export const getDashboardData = async (req, res) => {
       recentBookings: bookings.slice(0,3),
       monthlyRevenue
     }
+    res.json({ success: true, dashboardData });
+
 
   } catch (error) {
     console.log(error.message);
