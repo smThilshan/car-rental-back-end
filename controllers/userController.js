@@ -2,6 +2,7 @@ import jwt from "jsonwebtoken";
 import Car from "../models/Car.js";
 import User from "../models/User.js";
 import bcrypt from "bcrypt";
+import Booking from "../models/Booking.js";
 
 const generateToken = (userId) => {
   return jwt.sign({ userId }, process.env.JWT_SECRET_KEY, { expiresIn: "1d" });
@@ -102,3 +103,20 @@ export const getCars = async (req, res) =>{
     
   }
 }
+
+// Get bookings
+// Get all bookings for the logged-in user (customer)
+export const getUserBookings = async (req, res) => {
+  try {
+    const { _id } = req.user;
+
+    const bookings = await Booking.find({ user: _id })
+      .populate('car')
+      .sort({ createdAt: -1 });
+
+    res.json({ success: true, bookings });
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
