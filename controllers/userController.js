@@ -91,7 +91,7 @@ export const getUserData = async (req, res) =>{
 // Get Cars
 export const getCars = async (req, res) =>{
   try {
-    const {cars} = await Car.find({isAvailable: true}) 
+    const cars = await Car.find({isAvailable: true}) 
     res.json({
       success: true,
       cars,

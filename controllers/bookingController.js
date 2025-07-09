@@ -34,7 +34,7 @@ export const checkAvailabilityOfCar = async (req, res) => {
     availableCars = availableCars.filter((car) => car.isAvailable === true);
 
     // send response with available cars
-    // res.json({ success: true, cars: availableCars });
+    res.json({ success: true, cars: availableCars });
   } catch (error) {
     console.error(error.message);
     res.status(500).json({ success: false, message: error.message });
